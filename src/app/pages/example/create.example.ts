@@ -1,5 +1,4 @@
-// src/app/pages/todo/create.todo.ts
-
+// create.todo.ts
 import { CreateTheConnectionLocal, LocalSyncData, MakeTheInstanceConceptLocal, PatcherStructure, PRIVATE, UpdateComposition } from "mftsccs-browser";
 import { StatefulWidget } from "../../default/StatefulWidget";
 import './todo.style.css';
@@ -21,7 +20,7 @@ export class create extends StatefulWidget {
 
         let submitButton = this.getElementById("submit");
         if (submitButton) {
-            submitButton.onclick = (ev: Event) => {
+            submitButton.onclick = async (ev: Event) => { //async worked/ without async not displaying data
                 ev.preventDefault();
 
                 if (id.value) {
@@ -31,47 +30,49 @@ export class create extends StatefulWidget {
                         "title": title.value,
                         "content": content.value
                     }
-                    UpdateComposition(patcherStructure);
+                    await UpdateComposition(patcherStructure);
                 }
                 else {
-                    MakeTheInstanceConceptLocal("the_todo", "", true, userId, PRIVATE).then((mainconcept) => {
-                        MakeTheInstanceConceptLocal("title", title.value, false, userId, PRIVATE).then((concept) => {
-                            MakeTheInstanceConceptLocal("content", content.value, false, userId, PRIVATE).then((concept2) => {
-                                CreateTheConnectionLocal(mainconcept.id, concept.id, mainconcept.id, order, "", userId).then(() => {
-                                    CreateTheConnectionLocal(mainconcept.id, concept2.id, mainconcept.id, order, "", userId).then(() => {
-                                        LocalSyncData.SyncDataOnline();
-                                    })
-                                })
-                            });
-                        });
-                    });
+                    try {
+                        const mainConcept = await MakeTheInstanceConceptLocal("the_todo","", true, userId, PRIVATE);
+
+                        const titleConcept = await MakeTheInstanceConceptLocal("title", title.value, false, userId, PRIVATE);
+                        const contentConcept = await MakeTheInstanceConceptLocal("content", content.value, false, userId, PRIVATE);
+
+                        await CreateTheConnectionLocal(mainConcept.id, titleConcept.id, mainConcept.id, order, "", userId);
+                        await CreateTheConnectionLocal(mainConcept.id, contentConcept.id, mainConcept.id, order, "", userId);
+                        
+                        await LocalSyncData.SyncDataOnline();
+                    } catch (error) {
+                        console.error("Error creating todo:", error);
+                    }
                 }
 
-                // Clear form after submission
+                //clear field after subimt
                 title.value = '';
                 content.value = '';
+                id.value = '';
             }
         }
     }
 
     getHtml(): string {
-        let html = "";
-        html = `<div class="container">
+        return `<div class="container">
             <form>
                 <div>
                     <input type="number" id="id" hidden>
                     <div class="formbody">
                         <label>Title</label>
-                        <input type="text" id="title" placeholder="Enter todo title">
+                        <input type="text" id="title" placeholder="Enter todo title" required>
                     </div>
                     <div class="formbody">
                         <label>Content</label>
-                        <textarea id="content" placeholder="Enter todo content" rows="3"></textarea>
+                        <textarea id="content" placeholder="Enter todo content" rows="3" required></textarea>
                     </div>
                     <button class="btn btn-primary" id="submit" type="submit">Submit</button>
                 </div>
             </form>
         </div>`;
-        return html;
     }
 }
+
