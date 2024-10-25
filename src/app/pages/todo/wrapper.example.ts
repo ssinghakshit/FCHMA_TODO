@@ -1,8 +1,8 @@
 // src/app/pages/todo/wrapper.todo.ts
 
 import { StatefulWidget } from "../../default/StatefulWidget";
-import { create } from "./create.example";
-import { list } from "./list.example";
+import { create } from "./create.todo";
+import { list } from "./list.todo";
 import './todo.style.css';
 
 export class todo extends StatefulWidget {

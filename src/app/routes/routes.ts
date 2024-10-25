@@ -1,6 +1,6 @@
-import { create } from "../pages/example/create.example.ts";
-import { list } from "../pages/example/list.example.ts";
-import { todo } from "../pages/example/wrapper.example.ts";
+import { create } from "../pages/todo/create.todo.ts";
+import { list } from "../pages/todo/list.todo.ts";
+import { todo } from "../pages/todo/wrapper.example.ts";
 import homeIndex from "../pages/home/home.index.ts";
 import noPageFoundIndex from "../pages/noPageFound/noPageFound.index.ts";
 import { login } from "../pages/user/login.example.ts";
